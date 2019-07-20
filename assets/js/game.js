@@ -153,7 +153,6 @@ function timeOut(){
                 $("#answer"+i).html("");
             }
         }
-        timerrunning = true;
         setTimeout(function(){
             questionCount++;
             if(questionCount<5){
