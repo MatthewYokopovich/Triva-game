@@ -95,6 +95,7 @@ function init(){
         temparr = JSON.parse(JSON.stringify(currentQ.answer));
         for(var i =3; i>=0; i--){
             var tempind = Math.floor(Math.random()*temparr.length);
+            $("#answer"+i).css("display", "inherit");
             $("#answer"+i).html(temparr[tempind].html);
             $("#answer"+i).val(temparr[tempind].correct);
             var tempobj = temparr.splice(tempind, 1);
@@ -107,7 +108,7 @@ function nextQuestion(isCorrect){
     if(isCorrect && numCorrect===5){
         youWin();
     }
-    else if(isCorrect && questionCount<4){
+    else if(isCorrect){
         splashScreen();
     }
     else{
@@ -135,12 +136,14 @@ function splashScreen(){
     $("#question").html("You got it!");
     for(var i=0; i<4; i++){
         if(!$("#answer"+i).val()){
-            $("#answer"+i).html("");
+            $("#answer"+i).css("display", "none");
         }
     }
     setTimeout(function(){
         questionCount++;
-        init();
+        if(questionCount<5){
+            init();}
+        else{gameOver();}
     }, 5000);
 }
 function timeOut(){
@@ -150,7 +153,7 @@ function timeOut(){
         $("#question").html("Oops, looks like the correct answer was:");
         for(var i=0; i<4; i++){
             if(!$("#answer"+i).val()){
-                $("#answer"+i).html("");
+                $("#answer"+i).css("display", "none");
             }
         }
         setTimeout(function(){
@@ -172,9 +175,10 @@ function gameOver(){
         $("#time-remaining").html("00");
         $("#question").html("You Lost!<br>Better Luck next time.<br>You got "+numCorrect+" question(s) correct and "+(questionCount-numCorrect) + " wrong.");
         $("#answer0").html("Click here to try again");
+        $("#answer0").css("display", "inherit");
         $("#answer0").addClass("gameover");
         for(var i=1; i<4; i++){
-            $("#answer"+i).html('');
+            $("#answer"+i).css("display", "none");
         }
 }
 function youWin(){
@@ -183,9 +187,10 @@ function youWin(){
     $("#time-remaining").html("00");
         $("#question").html("You Win!<br>Good Job<br>You got "+numCorrect+" question(s) correct and "+(questionCount-numCorrect+1) + " wrong.");
         $("#answer0").html("Click here to try again");
+        $("#answer0").css("display", "inherit");
         $("#answer0").addClass("gameover");
         for(var i=1; i<4; i++){
-            $("#answer"+i).html('');
+            $("#answer"+i).css("display", "none");
         }
 }
 function reset(){
