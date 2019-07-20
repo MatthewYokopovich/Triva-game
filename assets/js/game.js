@@ -55,6 +55,7 @@ var numCorrect = 0;
 var intervalID;
 var time;
 var questions = [];
+var isgameover = false;
 
 var anstextarr = [];
 for(var i = 0;i<questiontext.length; i++){
@@ -77,9 +78,9 @@ for(var i = 0;i<questiontext.length; i++){
 
 function init(){
     var currentQ = question;
-    currentQ.text = questiontext[questionCount];
+    currentQ.html = questiontext[questionCount];
     for(var j =0; j<4; j++){
-        currentQ.answer[j].text = anstextarr[questionCount][j];
+        currentQ.answer[j].html = anstextarr[questionCount][j];
         switch(j){
             case 1:
                 currentQ.answer[j].correct = true;
@@ -88,13 +89,13 @@ function init(){
                 currentQ.answer[j].correct = false;
         }
     }
-        $("#time-remaining").text("30");
-        $("#question").text(currentQ.text);
+        $("#time-remaining").html("30");
+        $("#question").html(currentQ.html);
         var temparr = [];
         temparr = JSON.parse(JSON.stringify(currentQ.answer));
         for(var i =3; i>=0; i--){
             var tempind = Math.floor(Math.random()*temparr.length);
-            $("#answer"+i).text(temparr[tempind].text);
+            $("#answer"+i).html(temparr[tempind].html);
             $("#answer"+i).val(temparr[tempind].correct);
             var tempobj = temparr.splice(tempind, 1);
         }
@@ -103,11 +104,11 @@ function init(){
 
 function nextQuestion(isCorrect){
     if(isCorrect){numCorrect++;}
-    if(isCorrect && questionCount<4){
-        splashScreen();
-    }
-    else if(isCorrect && numCorrect===4){
+    if(isCorrect && numCorrect===5){
         youWin();
+    }
+    else if(isCorrect && questionCount<4){
+        splashScreen();
     }
     else{
         timeOut();
@@ -121,22 +122,22 @@ function timer(){
 }
 function decrement(){
     time--;
-    $("#time-remaining").text(time);
+    $("#time-remaining").html(time);
     if(time===0){
         stop();
         timeOut();
     }
 }
 function splashScreen(){
+    timerunning = false;
     console.log("splash");
-    $("#time-remaining").text("00");
-    $("#question").text("You got it!");
+    $("#time-remaining").html("00");
+    $("#question").html("You got it!");
     for(var i=0; i<4; i++){
         if(!$("#answer"+i).val()){
-            $("#answer"+i).text("");
+            $("#answer"+i).html("");
         }
     }
-    timerrunning = true;
     setTimeout(function(){
         questionCount++;
         init();
@@ -145,11 +146,11 @@ function splashScreen(){
 function timeOut(){
     if(questionCount<5){
         console.log("timeout");
-        $("#time-remaining").text("00");
-        $("#question").text("Oops, looks like the correct answer was:");
+        $("#time-remaining").html("00");
+        $("#question").html("Oops, looks like the correct answer was:");
         for(var i=0; i<4; i++){
             if(!$("#answer"+i).val()){
-                $("#answer"+i).text("");
+                $("#answer"+i).html("");
             }
         }
         timerrunning = true;
@@ -167,25 +168,25 @@ function stop(){
 }
 function gameOver(){
         console.log("Game Over");
+        isgameover = true;
         stop();
-        $("#time-remaining").text("00");
-        $("#question").text("You lost!");
-        $("#answer0").text("Better Luck next time.");
-        $("#answer1").text("You got "+numCorrect+" question(s) correct and "+m(questionCount-numCorrect) + " wrong.");
-        $("#answer2").text("Click here to try again");
-        for(var i=3; i<4; i++){
-            $("#answer"+i).text('');
+        $("#time-remaining").html("00");
+        $("#question").html("You Lost!<br>Better Luck next time.<br>You got "+numCorrect+" question(s) correct and "+(questionCount-numCorrect) + " wrong.");
+        $("#answer0").html("Click here to try again");
+        $("#answer0").addClass("gameover");
+        for(var i=1; i<4; i++){
+            $("#answer"+i).html('');
         }
 }
 function youWin(){
     console.log("You Win!");
-    $("#time-remaining").text("00");
-        $("#question").text("You Win!");
-        $("#answer0").text("Good Job");
-        $("#answer1").text("You got "+numCorrect+" question(s) correct and "+(questionCount-numCorrect) + " wrong.");
-        $("#answer2").text("Click here to try again");
+    isgameover = true;
+    $("#time-remaining").html("00");
+        $("#question").html("You Win!<br>Good Job<br>You got "+numCorrect+" question(s) correct and "+(questionCount-numCorrect+1) + " wrong.");
+        $("#answer0").html("Click here to try again");
+        $("#answer0").addClass("gameover");
         for(var i=1; i<4; i++){
-            $("#answer"+i).text('');
+            $("#answer"+i).html('');
         }
 }
 function reset(){
@@ -203,9 +204,10 @@ $(document).ready(function(){
             nextQuestion($(this).val());
         }
     });
-    $("#answer2").click(function(){
-        if(!(timerrunning)){
+    $("#answer0").click(function(){
+        if(isgameover)
             reset();
-        }
+            console.log("called reset");
+            isgameover = false;
     });
 });
